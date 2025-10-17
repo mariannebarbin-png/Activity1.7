@@ -11,10 +11,10 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 // Object
-const geometry = new THREE.BoxGeometry(1, 1, 1)
-const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
-const mesh = new THREE.Mesh(geometry, material)
-scene.add(mesh)
+const geometry = new THREE.SphereGeometry(1, 32, 32)
+const material = new THREE.MeshBasicMaterial({ color: 0xff9999, wireframe: true })
+const sphere = new THREE.Mesh(geometry, material)
+scene.add(sphere)
 
 // Sizes
 const sizes = {
@@ -53,6 +53,43 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
+const triangleGeometry = new THREE.BufferGeometry()
+const positionsArray = new Float32Array([
+    0, 0, 0,    
+    0, 1, 0,     
+    1, 0, 0     
+])
+
+const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3)
+triangleGeometry.setAttribute('position', positionsAttribute)
+
+const triangleMaterial = new THREE.MeshBasicMaterial({ 
+    color: 0x00ff00,
+    wireframe: true 
+})
+const triangleMesh = new THREE.Mesh(triangleGeometry, triangleMaterial)
+triangleMesh.position.x = 2
+scene.add(triangleMesh)
+
+const multipleTrianglesGeometry = new THREE.BufferGeometry()
+const count = 50
+const trianglePositionsArray = new Float32Array(count * 3 * 3)
+
+for(let i = 0; i < count * 3 * 3; i++) {
+    trianglePositionsArray[i] = (Math.random() - 0.5) * 4
+}
+
+const trianglePositionsAttribute = new THREE.BufferAttribute(trianglePositionsArray, 3)
+multipleTrianglesGeometry.setAttribute('position', trianglePositionsAttribute)
+
+const multipleTrianglesMaterial = new THREE.MeshBasicMaterial({ 
+    color: 0x0000ff,
+    wireframe: true 
+})
+const multipleTrianglesMesh = new THREE.Mesh(multipleTrianglesGeometry, multipleTrianglesMaterial)
+multipleTrianglesMesh.position.x = -2
+scene.add(multipleTrianglesMesh)
+
 // Animate
 const clock = new THREE.Clock()
 
@@ -60,13 +97,8 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
 
-    // Update controls
     controls.update()
-
-    // Render
     renderer.render(scene, camera)
-
-    // Call tick again on the next frame
     window.requestAnimationFrame(tick)
 }
 
